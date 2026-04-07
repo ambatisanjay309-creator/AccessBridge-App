@@ -1,0 +1,1569 @@
+<!DOCTYPE html>
+<!--
+  ╔══════════════════════════════════════════════════════════════╗
+  ║           AccessBridge — NC TSA Software Development         ║
+  ║       Accessibility Platform for Vision & Hearing Impaired   ║
+  ╚══════════════════════════════════════════════════════════════╝
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="AccessBridge — A comprehensive accessibility platform removing barriers for users with vision and hearing disabilities." />
+  <title>AccessBridge | Accessibility Platform</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+<style>
+/* ─────────────────────────────────────────────────────
+   DESIGN TOKENS
+───────────────────────────────────────────────────── */
+:root {
+  --bg:          #f2f0ed;
+  --bg2:         #ffffff;
+  --bg3:         #e8e5e0;
+  --card:        #ffffff;
+  --card-border: rgba(0,0,0,0.08);
+
+  --text:        #17130f;
+  --text2:       #54504a;
+  --text3:       #958f87;
+
+  --blue:        #1a56e8;
+  --blue-dark:   #1240c4;
+  --blue-light:  #dce8ff;
+  --purple:      #6d28d9;
+  --green:       #059669;
+  --red:         #dc2626;
+  --amber:       #d97706;
+
+  --focus-ring:  #1a56e8;
+
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 22px;
+  --r-xl: 32px;
+
+  --shadow-xs: 0 1px 2px rgba(0,0,0,.06);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,.08), 0 1px 3px rgba(0,0,0,.06);
+  --shadow-md: 0 8px 24px rgba(0,0,0,.10), 0 2px 6px rgba(0,0,0,.06);
+  --shadow-lg: 0 24px 64px rgba(0,0,0,.12), 0 4px 16px rgba(0,0,0,.08);
+
+  --font-display: 'Outfit', sans-serif;
+  --font-base:    'Plus Jakarta Sans', sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  --font-dyslexic:'OpenDyslexic', sans-serif;
+
+  --fs-base: 16px;
+  --lh: 1.65;
+  --ls: 0;
+
+  --ease: cubic-bezier(0.16,1,0.3,1);
+  --t: 0.18s ease;
+  --t-slow: 0.4s var(--ease);
+
+  --section-tts: #eff6ff;
+  --section-stt: #f5f3ff;
+}
+
+/* HIGH CONTRAST */
+.theme-high-contrast {
+  --bg:#000; --bg2:#000; --bg3:#000; --card:#111; --card-border:#fff;
+  --text:#fff; --text2:#f0f0f0; --text3:#ccc;
+  --blue:#ff0; --blue-dark:#ffd700; --blue-light:#333;
+  --purple:#0ff; --green:#0f0; --red:#f44; --amber:#fa0;
+  --focus-ring:#ff0;
+}
+/* DARK */
+.theme-dark {
+  --bg:#0d1117; --bg2:#161b22; --bg3:#0d1117; --card:#161b22; --card-border:rgba(255,255,255,0.08);
+  --text:#e6edf3; --text2:#8b949e; --text3:#484f58;
+  --blue:#4493f8; --blue-dark:#2f81f7; --blue-light:#1c2d4f;
+  --purple:#a475f9; --green:#3fb950; --red:#ff7b72; --amber:#d29922;
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.4); --shadow-md: 0 8px 24px rgba(0,0,0,0.5);
+}
+/* DEUTERANOPIA */
+.theme-deuteranopia { --blue:#0072b2; --purple:#cc79a7; --green:#0072b2; --red:#e69f00; --amber:#d55e00; }
+/* TRITANOPIA */
+.theme-tritanopia   { --blue:#d55e00; --purple:#cc79a7; --green:#009e73; --red:#e69f00; --amber:#d55e00; }
+/* MONOCHROME */
+.theme-monochrome   { filter: grayscale(1); }
+
+/* ─────────────────────────────────────────────────────
+   RESET & BASE
+───────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+body.reduce-motion *,body.reduce-motion *::before,body.reduce-motion *::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+
+html{scroll-behavior:smooth;font-size:var(--fs-base)}
+
+body{
+  font-family:var(--font-base);
+  font-size:var(--fs-base);
+  line-height:var(--lh);
+  letter-spacing:var(--ls);
+  color:var(--text);
+  background:var(--bg);
+  -webkit-font-smoothing:antialiased;
+  transition:background var(--t),color var(--t);
+}
+
+body.dyslexia-mode,body.dyslexia-mode *{font-family:var(--font-dyslexic)!important}
+body.increased-line-spacing{--lh:2.1}
+body.increased-letter-spacing{--ls:0.08em}
+body.large-cursor{cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Ccircle cx='5' cy='5' r='5' fill='%231a56e8'/%3E%3Cline x1='5' y1='5' x2='5' y2='35' stroke='%231a56e8' stroke-width='3'/%3E%3Cline x1='5' y1='5' x2='35' y2='5' stroke='%231a56e8' stroke-width='3'/%3E%3C/svg%3E") 5 5,auto}
+body.enhanced-focus *:focus-visible{outline:4px solid var(--focus-ring)!important;outline-offset:4px!important;box-shadow:0 0 0 8px rgba(26,86,232,0.2)!important}
+
+:focus-visible{outline:3px solid var(--focus-ring);outline-offset:3px;border-radius:4px}
+
+.skip-link{
+  position:absolute;top:-100px;left:16px;
+  background:var(--blue);color:#fff;padding:10px 20px;
+  border-radius:0 0 var(--r-sm) var(--r-sm);
+  font-weight:700;text-decoration:none;z-index:99999;
+  transition:top .2s;
+}
+.skip-link:focus{top:0}
+
+/* ─────────────────────────────────────────────────────
+   OVERLAYS
+───────────────────────────────────────────────────── */
+#visual-alert-overlay{position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:0}
+#visual-alert-overlay.flash-info    {animation:flash-blue 0.9s ease-out}
+#visual-alert-overlay.flash-warning {animation:flash-amber 0.9s ease-out}
+#visual-alert-overlay.flash-danger  {animation:flash-red 1.3s ease-out}
+#visual-alert-overlay.flash-success {animation:flash-green 0.9s ease-out}
+#visual-alert-overlay.flash-doorbell{animation:flash-purple 1s ease-out}
+#visual-alert-overlay.flash-phone   {animation:flash-cyan 1.5s ease-out}
+
+@keyframes flash-blue{0%,100%{opacity:0}15%{opacity:.45;background:#3b82f6}30%{opacity:0}45%{opacity:.3;background:#3b82f6}60%{opacity:0}}
+@keyframes flash-amber{0%,100%{opacity:0}15%{opacity:.5;background:#f59e0b}30%{opacity:0}45%{opacity:.35;background:#f59e0b}}
+@keyframes flash-red{0%,100%{opacity:0}10%{opacity:.65;background:#ef4444}20%{opacity:0}30%{opacity:.6;background:#ef4444}40%{opacity:0}50%{opacity:.55;background:#ef4444}60%{opacity:0}}
+@keyframes flash-green{0%,100%{opacity:0}20%{opacity:.4;background:#10b981}40%{opacity:0}}
+@keyframes flash-purple{0%,100%{opacity:0}15%{opacity:.45;background:#8b5cf6}30%{opacity:0}50%{opacity:.4;background:#8b5cf6}70%{opacity:0}}
+@keyframes flash-cyan{0%,100%{opacity:0}10%{opacity:.5;background:#06b6d4}20%{opacity:0}30%{opacity:.5;background:#06b6d4}40%{opacity:0}50%{opacity:.5;background:#06b6d4}60%{opacity:0}70%{opacity:.4;background:#06b6d4}80%{opacity:0}}
+
+#reading-guide{
+  position:fixed;left:0;right:0;height:34px;
+  background:rgba(26,86,232,.10);
+  border-top:2px solid rgba(26,86,232,.35);
+  border-bottom:2px solid rgba(26,86,232,.35);
+  pointer-events:none;z-index:8000;display:none;
+  transition:top .05s linear;
+}
+#reading-guide.active{display:block}
+
+/* ─────────────────────────────────────────────────────
+   CAPTION BAR
+───────────────────────────────────────────────────── */
+#caption-bar{
+  position:fixed;bottom:0;left:0;right:0;z-index:8500;
+  background:rgba(10,10,12,.94);color:#fff;
+  padding:14px 28px;backdrop-filter:blur(12px);
+  border-top:1px solid rgba(255,255,255,.1);
+}
+#caption-bar[hidden]{display:none}
+.caption-inner{display:flex;align-items:center;gap:14px;max-width:960px;margin:0 auto}
+.caption-badge{
+  background:var(--blue);color:#fff;
+  font-size:10px;font-weight:800;padding:3px 7px;
+  border-radius:5px;flex-shrink:0;letter-spacing:.08em;
+  font-family:var(--font-display);
+}
+#caption-text{font-size:1rem;font-weight:500;line-height:1.4}
+
+/* ─────────────────────────────────────────────────────
+   HEADER
+───────────────────────────────────────────────────── */
+.site-header{
+  position:sticky;top:0;z-index:1000;
+  background:rgba(242,240,237,.9);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--card-border);
+  transition:background var(--t);
+}
+.theme-dark .site-header{background:rgba(13,17,23,.9)}
+.theme-high-contrast .site-header{background:#000;border-bottom:2px solid #fff}
+
+.header-inner{
+  max-width:1320px;margin:0 auto;padding:0 28px;
+  height:68px;display:flex;align-items:center;gap:20px;
+}
+
+/* Logo */
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);flex-shrink:0}
+.logo-mark{
+  width:36px;height:36px;background:var(--blue);border-radius:10px;
+  display:grid;place-items:center;font-size:18px;color:#fff;font-weight:900;
+  font-family:var(--font-display);letter-spacing:-.02em;
+  box-shadow:0 4px 12px rgba(26,86,232,.35);
+  flex-shrink:0;
+}
+.logo-name{font-family:var(--font-display);font-size:1.2rem;font-weight:800;letter-spacing:-.03em}
+.logo-name span{color:var(--blue)}
+
+/* Toolbar */
+.quick-toolbar{display:flex;gap:4px;margin-left:auto}
+.toolbar-btn{
+  height:36px;padding:0 12px;
+  border:1.5px solid var(--card-border);background:var(--card);
+  color:var(--text2);border-radius:var(--r-sm);
+  font-size:.78rem;font-weight:700;cursor:pointer;
+  font-family:var(--font-display);letter-spacing:.03em;
+  transition:all var(--t);white-space:nowrap;
+}
+.toolbar-btn:hover,[aria-pressed="true"].toolbar-btn{
+  background:var(--blue);color:#fff;border-color:var(--blue);
+  box-shadow:0 2px 8px rgba(26,86,232,.3);
+}
+
+/* Nav */
+.main-nav{display:flex;gap:2px;margin-left:8px}
+.nav-link{
+  padding:7px 13px;color:var(--text2);text-decoration:none;
+  font-size:.85rem;font-weight:600;border-radius:var(--r-sm);
+  transition:all var(--t);
+}
+.nav-link:hover{background:var(--bg3);color:var(--text)}
+@media(max-width:900px){.main-nav{display:none}}
+
+/* ─────────────────────────────────────────────────────
+   HERO
+───────────────────────────────────────────────────── */
+.hero{
+  position:relative;padding:88px 28px 100px;
+  overflow:hidden;min-height:540px;display:flex;align-items:center;
+  background:var(--bg);
+}
+
+/* Subtle mesh background */
+.hero::before{
+  content:'';position:absolute;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 70% -10%, rgba(26,86,232,.1), transparent),
+    radial-gradient(ellipse 60% 50% at 0% 100%, rgba(109,40,217,.08), transparent);
+  pointer-events:none;
+}
+
+/* Dot grid */
+.hero::after{
+  content:'';position:absolute;inset:0;z-index:0;
+  background-image:radial-gradient(circle,rgba(0,0,0,.12) 1px,transparent 1px);
+  background-size:28px 28px;pointer-events:none;opacity:.6;
+}
+.theme-dark .hero::after{background-image:radial-gradient(circle,rgba(255,255,255,.08) 1px,transparent 1px)}
+
+.hero-content{position:relative;z-index:1;max-width:1320px;margin:0 auto;width:100%}
+
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 14px 6px 8px;
+  background:var(--blue-light);border:1px solid rgba(26,86,232,.25);
+  border-radius:100px;margin-bottom:28px;
+}
+.hero-eyebrow-dot{
+  width:7px;height:7px;background:var(--blue);border-radius:50%;
+  animation:pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(.8)}}
+.hero-eyebrow-text{font-size:.78rem;font-weight:700;color:var(--blue);letter-spacing:.05em;text-transform:uppercase;font-family:var(--font-display)}
+.theme-dark .hero-eyebrow{background:rgba(26,86,232,.15)}
+
+.hero-title{
+  font-family:var(--font-display);
+  font-size:clamp(2.4rem,5.5vw,4.2rem);
+  font-weight:900;line-height:1.05;
+  letter-spacing:-.04em;color:var(--text);
+  margin-bottom:22px;max-width:780px;
+}
+
+.hero-title .accent{
+  background:linear-gradient(120deg, var(--blue), var(--purple));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.theme-high-contrast .hero-title .accent{-webkit-text-fill-color:var(--blue);background:none}
+
+.hero-sub{
+  font-size:1.15rem;color:var(--text2);max-width:580px;
+  margin-bottom:36px;line-height:1.75;font-weight:400;
+}
+
+.hero-btns{display:flex;gap:12px;margin-bottom:40px;flex-wrap:wrap}
+
+.hero-stats{
+  display:flex;gap:36px;flex-wrap:wrap;
+  padding-top:32px;border-top:1px solid var(--card-border);
+  margin-top:4px;
+}
+.stat{display:flex;flex-direction:column;gap:2px}
+.stat-num{font-family:var(--font-display);font-size:1.7rem;font-weight:900;color:var(--text);letter-spacing:-.04em}
+.stat-label{font-size:.8rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+
+/* Feature pills */
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:36px}
+.pill{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 14px;background:var(--card);
+  border:1px solid var(--card-border);border-radius:100px;
+  font-size:.82rem;font-weight:600;color:var(--text2);
+  box-shadow:var(--shadow-xs);transition:all var(--t);
+}
+.pill:hover{border-color:var(--blue);color:var(--blue);transform:translateY(-1px);box-shadow:var(--shadow-sm)}
+
+/* ─────────────────────────────────────────────────────
+   BUTTONS
+───────────────────────────────────────────────────── */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:12px 24px;border-radius:var(--r-sm);
+  font-family:var(--font-base);font-size:.9rem;font-weight:700;
+  cursor:pointer;border:2px solid transparent;
+  transition:all var(--t);text-decoration:none;white-space:nowrap;line-height:1;
+}
+.btn:disabled{opacity:.4;cursor:not-allowed;pointer-events:none}
+
+.btn-primary{
+  background:var(--blue);color:#fff;border-color:var(--blue);
+  box-shadow:0 2px 12px rgba(26,86,232,.28);
+}
+.btn-primary:hover{background:var(--blue-dark);border-color:var(--blue-dark);transform:translateY(-1px);box-shadow:0 6px 18px rgba(26,86,232,.35)}
+
+.btn-secondary{background:var(--card);color:var(--text);border-color:var(--card-border);box-shadow:var(--shadow-xs)}
+.btn-secondary:hover{border-color:var(--blue);color:var(--blue);transform:translateY(-1px)}
+
+.btn-danger{background:var(--red);color:#fff;border-color:var(--red)}
+.btn-danger:hover{background:#b91c1c;border-color:#b91c1c}
+
+.btn-ghost{background:transparent;color:var(--text2);border-color:transparent}
+.btn-ghost:hover{background:var(--bg3);color:var(--text)}
+
+.btn-sm{padding:8px 16px;font-size:.82rem}
+.btn-lg{padding:15px 30px;font-size:1rem}
+
+/* Alert type buttons */
+.btn-alert{
+  padding:13px 16px;border-radius:var(--r-md);
+  font-size:.87rem;width:100%;justify-content:flex-start;
+  border:1.5px solid;transition:all var(--t);font-weight:600;
+}
+.alert-info{background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8}
+.alert-info:hover{background:#dbeafe}
+.alert-warning{background:#fffbeb;border-color:#fde68a;color:#92400e}
+.alert-warning:hover{background:#fef3c7}
+.alert-danger{background:#fef2f2;border-color:#fecaca;color:#991b1b}
+.alert-danger:hover{background:#fee2e2}
+.alert-success{background:#f0fdf4;border-color:#bbf7d0;color:#065f46}
+.alert-success:hover{background:#dcfce7}
+.alert-doorbell{background:#f5f3ff;border-color:#ddd6fe;color:#5b21b6}
+.alert-doorbell:hover{background:#ede9fe}
+.alert-phone{background:#ecfeff;border-color:#a5f3fc;color:#0e7490}
+.alert-phone:hover{background:#cffafe}
+
+/* ─────────────────────────────────────────────────────
+   LAYOUT: SECTIONS
+───────────────────────────────────────────────────── */
+.section{padding:88px 28px}
+.section-alt{background:var(--bg3)}
+.section-inner{max-width:1160px;margin:0 auto}
+
+.section-header{
+  display:flex;align-items:flex-start;gap:28px;margin-bottom:52px;
+}
+.sec-num{
+  font-family:var(--font-display);font-size:1rem;font-weight:900;
+  letter-spacing:.06em;color:var(--blue);
+  background:var(--blue-light);padding:5px 10px;
+  border-radius:var(--r-sm);flex-shrink:0;margin-top:5px;
+}
+.theme-dark .sec-num{background:rgba(26,86,232,.18)}
+.section-title{
+  font-family:var(--font-display);font-size:1.9rem;font-weight:800;
+  letter-spacing:-.03em;margin-bottom:10px;color:var(--text);
+}
+.section-desc{color:var(--text2);font-size:1rem;max-width:580px;line-height:1.75}
+
+/* ─────────────────────────────────────────────────────
+   CARDS
+───────────────────────────────────────────────────── */
+.card{
+  background:var(--card);border:1px solid var(--card-border);
+  border-radius:var(--r-lg);padding:28px;
+  box-shadow:var(--shadow-sm);transition:box-shadow var(--t);
+}
+.card:hover{box-shadow:var(--shadow-md)}
+.card-title{
+  font-family:var(--font-display);font-size:1.05rem;font-weight:700;
+  margin-bottom:8px;color:var(--text);display:flex;align-items:center;gap:8px;
+}
+.card-title .title-icon{font-size:1.1rem}
+.card-desc{color:var(--text2);font-size:.9rem;margin-bottom:20px;line-height:1.6}
+
+/* ─────────────────────────────────────────────────────
+   FORM ELEMENTS
+───────────────────────────────────────────────────── */
+.field{display:flex;flex-direction:column;gap:7px}
+.label{font-size:.82rem;font-weight:700;color:var(--text2);letter-spacing:.02em}
+
+.tts-textarea{
+  width:100%;padding:16px 18px;
+  border:1.5px solid var(--card-border);border-radius:var(--r-md);
+  font-family:var(--font-base);font-size:1rem;color:var(--text);
+  background:var(--bg);resize:vertical;line-height:1.65;
+  transition:border-color var(--t),box-shadow var(--t);
+}
+.tts-textarea:focus{
+  border-color:var(--blue);outline:none;
+  box-shadow:0 0 0 4px rgba(26,86,232,.12);
+}
+.tts-textarea::placeholder{color:var(--text3)}
+
+.char-count{font-size:.78rem;color:var(--text3);text-align:right}
+
+.ctrl-select{
+  padding:10px 14px;border:1.5px solid var(--card-border);border-radius:var(--r-sm);
+  font-family:var(--font-base);font-size:.9rem;color:var(--text);
+  background:var(--bg);cursor:pointer;transition:border-color var(--t);
+  width:100%;
+}
+.ctrl-select:focus{border-color:var(--blue);outline:none;box-shadow:0 0 0 3px rgba(26,86,232,.12)}
+
+/* Range slider */
+.ctrl-range{
+  -webkit-appearance:none;appearance:none;width:100%;height:5px;
+  background:var(--card-border);border-radius:100px;outline:none;cursor:pointer;
+}
+.ctrl-range::-webkit-slider-thumb{
+  -webkit-appearance:none;width:18px;height:18px;background:var(--blue);
+  border-radius:50%;cursor:pointer;border:2px solid #fff;
+  box-shadow:0 2px 6px rgba(26,86,232,.4);transition:transform var(--t);
+}
+.ctrl-range::-webkit-slider-thumb:hover{transform:scale(1.25)}
+.ctrl-range:focus{box-shadow:0 0 0 3px rgba(26,86,232,.2)}
+
+/* ─────────────────────────────────────────────────────
+   TTS SECTION
+───────────────────────────────────────────────────── */
+.tts-card{display:flex;flex-direction:column;gap:24px}
+
+.voice-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:20px;
+}
+@media(max-width:600px){.voice-grid{grid-template-columns:1fr}}
+
+.voice-grid .field:first-child{grid-column:1/-1}
+
+.tts-word-box{
+  padding:14px 18px;border-radius:var(--r-sm);
+  background:linear-gradient(135deg,var(--blue-light),rgba(109,40,217,.06));
+  border:1px solid rgba(26,86,232,.18);
+  font-size:.95rem;color:var(--text2);font-style:italic;min-height:48px;
+  display:flex;align-items:center;
+  transition:all .2s;
+}
+.tts-actions{display:flex;gap:10px;flex-wrap:wrap}
+
+.status-bar{
+  padding:10px 16px;background:var(--bg);border-radius:var(--r-sm);
+  font-size:.83rem;color:var(--text3);
+  border-left:3px solid var(--blue);letter-spacing:.01em;
+}
+
+/* ─────────────────────────────────────────────────────
+   STT SECTION
+───────────────────────────────────────────────────── */
+.stt-card{display:flex;flex-direction:column;gap:24px}
+
+.mic-stage{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:16px;padding:32px;
+  background:linear-gradient(135deg,rgba(109,40,217,.04),rgba(26,86,232,.04));
+  border-radius:var(--r-lg);border:1px dashed rgba(26,86,232,.2);
+}
+
+.mic-ring{
+  width:72px;height:72px;border-radius:50%;
+  background:linear-gradient(135deg,var(--blue),var(--purple));
+  display:grid;place-items:center;font-size:2rem;
+  box-shadow:0 8px 24px rgba(26,86,232,.3);
+  transition:all var(--t);
+}
+.mic-ring.listening{
+  animation:mic-glow 1.2s ease-in-out infinite;
+  box-shadow:0 0 0 0 rgba(26,86,232,.5);
+}
+@keyframes mic-glow{
+  0%{box-shadow:0 8px 24px rgba(26,86,232,.3),0 0 0 0 rgba(26,86,232,.4)}
+  70%{box-shadow:0 8px 24px rgba(26,86,232,.3),0 0 0 20px rgba(26,86,232,0)}
+  100%{box-shadow:0 8px 24px rgba(26,86,232,.3),0 0 0 0 rgba(26,86,232,0)}
+}
+
+.sound-bars{display:flex;align-items:center;gap:5px;height:40px}
+.bar{width:5px;background:var(--blue);border-radius:100px;height:6px;transition:height .1s}
+.sound-bars.listening .bar{animation:bar-dance .6s ease-in-out infinite alternate}
+@keyframes bar-dance{from{height:6px}to{height:36px}}
+.bar:nth-child(1){animation-delay:0s}.bar:nth-child(2){animation-delay:.08s}
+.bar:nth-child(3){animation-delay:.16s}.bar:nth-child(4){animation-delay:.24s}
+.bar:nth-child(5){animation-delay:.16s}.bar:nth-child(6){animation-delay:.08s}
+.bar:nth-child(7){animation-delay:0s}
+
+.transcript-area{
+  min-height:160px;max-height:300px;padding:18px;overflow-y:auto;
+  background:var(--bg);border:1.5px solid var(--card-border);border-radius:var(--r-md);
+  font-size:1rem;color:var(--text);line-height:1.75;white-space:pre-wrap;
+}
+.transcript-placeholder{color:var(--text3);font-style:italic}
+
+.interim-bar{
+  padding:10px 14px;border-radius:var(--r-sm);min-height:38px;
+  background:rgba(26,86,232,.05);border:1px dashed rgba(26,86,232,.25);
+  font-size:.9rem;color:var(--blue);font-style:italic;
+}
+
+/* ─────────────────────────────────────────────────────
+   ALERTS SECTION
+───────────────────────────────────────────────────── */
+.alerts-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:768px){.alerts-grid{grid-template-columns:1fr}}
+.alerts-log-card{grid-column:1/-1}
+
+.alert-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:500px){.alert-btns{grid-template-columns:1fr}}
+
+.alert-log{
+  min-height:100px;max-height:260px;overflow-y:auto;
+  display:flex;flex-direction:column;gap:8px;margin-bottom:16px;
+}
+.log-placeholder{color:var(--text3);font-style:italic;font-size:.9rem}
+.log-entry{
+  display:flex;gap:12px;align-items:flex-start;
+  padding:11px 15px;border-radius:var(--r-sm);font-size:.87rem;
+  animation:slide-in .25s var(--ease);
+}
+@keyframes slide-in{from{transform:translateY(-8px);opacity:0}to{transform:translateY(0);opacity:1}}
+.log-entry.log-info{background:#eff6ff;color:#1d4ed8}
+.log-entry.log-warning{background:#fffbeb;color:#92400e}
+.log-entry.log-danger{background:#fef2f2;color:#991b1b}
+.log-entry.log-success{background:#f0fdf4;color:#065f46}
+.log-entry.log-doorbell{background:#f5f3ff;color:#5b21b6}
+.log-entry.log-phone{background:#ecfeff;color:#0e7490}
+.log-time{font-weight:700;opacity:.65;white-space:nowrap;font-size:.78rem;margin-top:1px;font-family:var(--font-mono)}
+
+/* Alert Banner */
+.alert-banner{
+  position:fixed;top:76px;left:50%;
+  transform:translateX(-50%) translateY(-24px);
+  z-index:9000;min-width:360px;max-width:620px;
+  background:var(--card);border:1px solid var(--card-border);
+  border-radius:var(--r-lg);box-shadow:var(--shadow-lg);
+  opacity:0;transition:opacity .3s,transform .35s var(--ease);
+}
+.alert-banner[hidden]{display:none}
+.alert-banner.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.alert-banner-inner{display:flex;align-items:center;gap:14px;padding:16px 22px}
+.alert-banner-title{font-weight:800;font-size:.95rem;color:var(--text);flex:1;font-family:var(--font-display)}
+.alert-banner-msg{font-size:.85rem;color:var(--text2);flex:2}
+.alert-dismiss{
+  border:none;background:none;font-size:1.4rem;cursor:pointer;
+  color:var(--text3);padding:2px 8px;border-radius:6px;line-height:1;
+}
+.alert-dismiss:hover{color:var(--text);background:var(--bg3)}
+
+/* ─────────────────────────────────────────────────────
+   SETTINGS SECTION
+───────────────────────────────────────────────────── */
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:768px){.settings-grid{grid-template-columns:1fr}}
+.settings-card{display:flex;flex-direction:column;gap:18px}
+
+/* Theme grid */
+.theme-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.theme-btn{
+  display:flex;flex-direction:column;align-items:center;gap:7px;
+  padding:12px 8px;border:2px solid var(--card-border);
+  border-radius:var(--r-md);background:var(--bg);color:var(--text2);
+  cursor:pointer;font-size:.75rem;font-weight:700;
+  font-family:var(--font-display);transition:all var(--t);
+}
+.theme-btn:hover,.theme-btn[aria-pressed="true"]{
+  border-color:var(--blue);color:var(--blue);
+  background:rgba(26,86,232,.04);
+  box-shadow:0 0 0 3px rgba(26,86,232,.1);
+}
+.theme-prev{width:38px;height:24px;border-radius:7px;display:block}
+.tp-default{background:linear-gradient(135deg,#f2f0ed,#1a56e8)}
+.tp-hc{background:linear-gradient(135deg,#000,#ffff00)}
+.tp-dark{background:linear-gradient(135deg,#0d1117,#4493f8)}
+.tp-deut{background:linear-gradient(135deg,#0072b2,#cc79a7)}
+.tp-trit{background:linear-gradient(135deg,#d55e00,#009e73)}
+.tp-mono{background:linear-gradient(135deg,#555,#bbb)}
+
+/* Font size buttons */
+.fs-btns{display:flex;gap:6px;flex-wrap:wrap}
+
+/* Toggle rows */
+.toggle-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:13px 0;border-bottom:1px solid var(--card-border);
+}
+.toggle-row:last-child{border-bottom:none}
+.toggle-label{font-size:.9rem;font-weight:600;color:var(--text);cursor:pointer}
+
+.toggle-btn{
+  position:relative;width:48px;height:27px;
+  background:var(--card-border);border:none;border-radius:100px;
+  cursor:pointer;transition:background var(--t);flex-shrink:0;
+}
+.toggle-btn[aria-checked="true"]{background:var(--blue)}
+.toggle-thumb{
+  position:absolute;top:3.5px;left:3.5px;
+  width:20px;height:20px;background:#fff;border-radius:50%;
+  transition:left var(--t);box-shadow:0 1px 4px rgba(0,0,0,.2);
+}
+.toggle-btn[aria-checked="true"] .toggle-thumb{left:24.5px}
+
+/* Shortcuts */
+.shortcuts-card{grid-column:1/-1}
+.shortcut-list{display:grid;grid-template-columns:auto 1fr;gap:10px 28px;align-items:baseline}
+dt{display:flex;gap:5px;align-items:center;white-space:nowrap}
+dd{color:var(--text2);font-size:.9rem}
+kbd{
+  display:inline-block;padding:3px 9px;background:var(--bg);
+  border:1px solid var(--card-border);border-radius:6px;
+  font-family:var(--font-mono);font-size:.78rem;
+  color:var(--text);box-shadow:0 1.5px 0 var(--card-border);font-weight:700;
+}
+
+/* Reset bar */
+.reset-bar{
+  display:flex;align-items:center;gap:16px;
+  margin-top:28px;padding-top:28px;border-top:1px solid var(--card-border);
+}
+.reset-confirm{font-size:.85rem;color:var(--green);font-weight:700}
+
+/* ─────────────────────────────────────────────────────
+   FLASH CONTROLS (in alerts card)
+───────────────────────────────────────────────────── */
+.intensity-btns{display:flex;gap:6px}
+.intensity-btn{
+  flex:1;padding:9px 0;border:1.5px solid var(--card-border);
+  background:var(--bg);color:var(--text2);border-radius:var(--r-sm);
+  cursor:pointer;font-size:.82rem;font-weight:700;font-family:var(--font-display);
+  transition:all var(--t);
+}
+.intensity-btn.active,.intensity-btn:hover{
+  background:var(--blue);color:#fff;border-color:var(--blue);
+}
+
+/* ─────────────────────────────────────────────────────
+   FOOTER
+───────────────────────────────────────────────────── */
+.site-footer{
+  background:var(--card);border-top:1px solid var(--card-border);padding:48px 28px;
+}
+.footer-inner{max-width:1160px;margin:0 auto}
+.footer-grid{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px}
+.footer-brand{display:flex;align-items:center;gap:10px}
+.footer-brand-mark{
+  width:32px;height:32px;background:var(--blue);border-radius:9px;
+  display:grid;place-items:center;color:#fff;font-weight:900;
+  font-family:var(--font-display);font-size:14px;
+}
+.footer-brand-name{font-family:var(--font-display);font-weight:800;font-size:1.1rem;letter-spacing:-.02em}
+.footer-meta{font-size:.82rem;color:var(--text3);line-height:1.8;text-align:right}
+
+/* ─────────────────────────────────────────────────────
+   SCROLLBAR
+───────────────────────────────────────────────────── */
+::-webkit-scrollbar{width:7px;height:7px}
+::-webkit-scrollbar-track{background:var(--bg3);border-radius:4px}
+::-webkit-scrollbar-thumb{background:var(--card-border);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--text3)}
+
+/* ─────────────────────────────────────────────────────
+   ENTRANCE ANIMATIONS
+───────────────────────────────────────────────────── */
+@keyframes fade-up{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+.hero-eyebrow{animation:fade-up .5s var(--ease) .05s both}
+.hero-title{animation:fade-up .55s var(--ease) .15s both}
+.hero-sub{animation:fade-up .55s var(--ease) .25s both}
+.hero-btns{animation:fade-up .55s var(--ease) .32s both}
+.pills{animation:fade-up .55s var(--ease) .38s both}
+.hero-stats{animation:fade-up .55s var(--ease) .44s both}
+
+/* ─────────────────────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────────────────────── */
+@media(max-width:640px){
+  .hero{padding:56px 20px 72px}
+  .section{padding:60px 20px}
+  .header-inner{padding:0 16px}
+  .quick-toolbar .toolbar-btn{display:none}
+  .quick-toolbar .toolbar-btn:nth-child(-n+3){display:flex}
+}
+
+/* Print */
+@media print{
+  .site-header,.quick-toolbar,.hero::before,.hero::after,
+  .alert-banner,#caption-bar,#reading-guide,#visual-alert-overlay{display:none!important}
+  body{background:#fff;color:#000}
+}
+</style>
+</head>
+<body class="theme-default">
+
+<!-- Visual alert overlay -->
+<div id="visual-alert-overlay" aria-hidden="true" role="alert" aria-live="assertive"></div>
+
+<!-- Reading guide -->
+<div id="reading-guide" aria-hidden="true"></div>
+
+<!-- Caption bar -->
+<div id="caption-bar" role="status" aria-live="polite" aria-label="Live captions" hidden>
+  <div class="caption-inner">
+    <span class="caption-badge" aria-hidden="true">CC</span>
+    <span id="caption-text">Captions will appear here…</span>
+  </div>
+</div>
+
+<!-- ═══════ HEADER ═══════ -->
+<header class="site-header" role="banner">
+  <div class="header-inner">
+    <a href="#" class="logo" aria-label="AccessBridge Home">
+      <div class="logo-mark" aria-hidden="true">A</div>
+      <span class="logo-name">Access<span>Bridge</span></span>
+    </a>
+
+    <nav class="quick-toolbar" aria-label="Accessibility quick settings">
+      <button id="btn-font-down" class="toolbar-btn" aria-label="Decrease font size" title="Decrease font size">A−</button>
+      <button id="btn-font-up"   class="toolbar-btn" aria-label="Increase font size"  title="Increase font size">A+</button>
+      <button id="btn-dyslexia"  class="toolbar-btn" aria-label="Toggle dyslexia-friendly font" title="Dyslexia font" aria-pressed="false">Dy</button>
+      <button id="btn-contrast"  class="toolbar-btn" aria-label="Cycle contrast modes" title="Contrast mode">◑</button>
+      <button id="btn-reading-guide" class="toolbar-btn" aria-label="Toggle reading guide" title="Reading guide" aria-pressed="false">≡</button>
+      <button id="btn-captions"  class="toolbar-btn" aria-label="Toggle live captions" title="Captions" aria-pressed="false">CC</button>
+    </nav>
+
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="#tts-section" class="nav-link">Text-to-Speech</a>
+      <a href="#stt-section" class="nav-link">Speech-to-Text</a>
+      <a href="#visual-alerts-section" class="nav-link">Visual Alerts</a>
+      <a href="#settings-section" class="nav-link">Settings</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ═══════ HERO ═══════ -->
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero-content">
+    <div class="hero-eyebrow" aria-hidden="true">
+      <div class="hero-eyebrow-dot"></div>
+      <span class="hero-eyebrow-text">NC TSA Software Development</span>
+    </div>
+
+    <h1 id="hero-title" class="hero-title">
+      Breaking Barriers,<br/>
+      <span class="accent">Building Access.</span>
+    </h1>
+
+    <p class="hero-sub">
+      A fully-featured accessibility platform designed for users with vision and hearing disabilities.
+      Real-time captions, text-to-speech, visual alerts, and more — all in one place.
+    </p>
+
+    <div class="pills" aria-label="Key features">
+      <span class="pill">🔊 Text-to-Speech</span>
+      <span class="pill">🎙️ Speech-to-Text</span>
+      <span class="pill">💬 Live Captions</span>
+      <span class="pill">⚡ Visual Alerts</span>
+      <span class="pill">👁️ Screen Reader</span>
+      <span class="pill">🎨 6 Color Modes</span>
+    </div>
+
+    <div class="hero-btns">
+      <a href="#tts-section" class="btn btn-primary btn-lg">Get Started</a>
+      <a href="#settings-section" class="btn btn-secondary btn-lg">Customize Display</a>
+    </div>
+
+    <div class="hero-stats" aria-label="Platform highlights">
+      <div class="stat"><span class="stat-num">10</span><span class="stat-label">Languages</span></div>
+      <div class="stat"><span class="stat-num">6</span><span class="stat-label">Alert Types</span></div>
+      <div class="stat"><span class="stat-num">6</span><span class="stat-label">Color Themes</span></div>
+      <div class="stat"><span class="stat-num">WCAG 2.1</span><span class="stat-label">AA Compliant</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ MAIN ═══════ -->
+<main id="main-content" tabindex="-1">
+
+  <!-- ── 01: TEXT-TO-SPEECH ── -->
+  <section id="tts-section" class="section" aria-labelledby="tts-heading">
+    <div class="section-inner">
+      <div class="section-header">
+        <div class="sec-num" aria-hidden="true">01</div>
+        <div>
+          <h2 id="tts-heading" class="section-title">Text-to-Speech Engine</h2>
+          <p class="section-desc">Type or paste any text and have it read aloud with customizable voice, speed, pitch, and volume settings. Live word highlighting shows exactly what's being spoken.</p>
+        </div>
+      </div>
+
+      <div class="card tts-card">
+        <div class="field">
+          <label for="tts-input" class="label">Enter text to be spoken</label>
+          <textarea id="tts-input" class="tts-textarea"
+            placeholder="Type or paste text here… AccessBridge will read it aloud for you."
+            rows="6" aria-describedby="tts-char-count"></textarea>
+          <div id="tts-char-count" class="char-count" aria-live="polite">0 characters</div>
+        </div>
+
+        <div class="voice-grid" role="group" aria-label="Voice settings">
+          <div class="field">
+            <label for="voice-select" class="label">Voice</label>
+            <select id="voice-select" class="ctrl-select" aria-label="Select voice">
+              <option>Loading voices…</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="speed-range" class="label">Speed — <span id="speed-value" aria-live="polite">1.0×</span></label>
+            <input type="range" id="speed-range" class="ctrl-range" min="0.5" max="2" step="0.1" value="1"
+              aria-label="Speech speed" aria-valuemin="0.5" aria-valuemax="2" aria-valuenow="1"/>
+          </div>
+          <div class="field">
+            <label for="pitch-range" class="label">Pitch — <span id="pitch-value" aria-live="polite">1.0</span></label>
+            <input type="range" id="pitch-range" class="ctrl-range" min="0.5" max="2" step="0.1" value="1"
+              aria-label="Speech pitch" aria-valuemin="0.5" aria-valuemax="2" aria-valuenow="1"/>
+          </div>
+          <div class="field">
+            <label for="volume-range" class="label">Volume — <span id="volume-value" aria-live="polite">100%</span></label>
+            <input type="range" id="volume-range" class="ctrl-range" min="0" max="1" step="0.05" value="1"
+              aria-label="Volume" aria-valuemin="0" aria-valuemax="1" aria-valuenow="1"/>
+          </div>
+        </div>
+
+        <div id="tts-highlight-area" class="tts-word-box" aria-live="polite" aria-label="Currently speaking word">
+          Currently speaking word will appear here
+        </div>
+
+        <div class="tts-actions">
+          <button id="btn-speak"    class="btn btn-primary"   aria-label="Speak text">▶ Speak</button>
+          <button id="btn-pause"    class="btn btn-secondary" aria-label="Pause speech" disabled>⏸ Pause</button>
+          <button id="btn-stop"     class="btn btn-danger"    aria-label="Stop speech" disabled>⏹ Stop</button>
+          <button id="btn-clear-tts" class="btn btn-ghost"   aria-label="Clear text">Clear</button>
+        </div>
+
+        <div id="tts-status" class="status-bar" role="status" aria-live="polite">Ready to speak</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 02: SPEECH-TO-TEXT ── -->
+  <section id="stt-section" class="section section-alt" aria-labelledby="stt-heading">
+    <div class="section-inner">
+      <div class="section-header">
+        <div class="sec-num" aria-hidden="true">02</div>
+        <div>
+          <h2 id="stt-heading" class="section-title">Speech-to-Text Transcription</h2>
+          <p class="section-desc">Speak into your microphone and watch your words transcribed live. Supports continuous listening, 10 languages, and one-click copy to clipboard.</p>
+        </div>
+      </div>
+
+      <div class="card stt-card">
+        <div class="mic-stage" aria-hidden="true">
+          <div class="mic-ring" id="mic-icon">🎙️</div>
+          <div class="sound-bars" id="sound-bars">
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          </div>
+        </div>
+
+        <div>
+          <div id="stt-transcript" class="transcript-area"
+            role="log" aria-live="polite" aria-label="Live transcript" aria-atomic="false">
+            <span class="transcript-placeholder">Your transcription will appear here in real time…</span>
+          </div>
+          <div id="stt-interim" class="interim-bar" aria-live="polite" aria-label="Current phrase being recognized"></div>
+        </div>
+
+        <div class="field">
+          <label for="stt-language" class="label">Recognition Language</label>
+          <select id="stt-language" class="ctrl-select">
+            <option value="en-US">🇺🇸 English (US)</option>
+            <option value="en-GB">🇬🇧 English (UK)</option>
+            <option value="es-ES">🇪🇸 Español</option>
+            <option value="fr-FR">🇫🇷 Français</option>
+            <option value="de-DE">🇩🇪 Deutsch</option>
+            <option value="zh-CN">🇨🇳 中文</option>
+            <option value="ja-JP">🇯🇵 日本語</option>
+            <option value="ko-KR">🇰🇷 한국어</option>
+            <option value="pt-BR">🇧🇷 Português</option>
+            <option value="ar-SA">🇸🇦 العربية</option>
+          </select>
+        </div>
+
+        <div class="tts-actions">
+          <button id="btn-listen"           class="btn btn-primary"   aria-label="Start listening">🎙️ Start Listening</button>
+          <button id="btn-stop-listen"      class="btn btn-danger"    aria-label="Stop listening" disabled>⏹ Stop</button>
+          <button id="btn-copy-transcript"  class="btn btn-secondary" aria-label="Copy transcript to clipboard" disabled>Copy Transcript</button>
+          <button id="btn-clear-transcript" class="btn btn-ghost"     aria-label="Clear transcript" disabled>Clear</button>
+        </div>
+
+        <div id="stt-status" class="status-bar" role="status" aria-live="polite">Click "Start Listening" to begin transcription</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 03: VISUAL ALERTS ── -->
+  <section id="visual-alerts-section" class="section" aria-labelledby="alerts-heading">
+    <div class="section-inner">
+      <div class="section-header">
+        <div class="sec-num" aria-hidden="true">03</div>
+        <div>
+          <h2 id="alerts-heading" class="section-title">Visual Sound Alerts</h2>
+          <p class="section-desc">Transforms audio-only notifications into full-screen color flashes and slide-in banners — critical for users with hearing impairments to stay aware of everything happening.</p>
+        </div>
+      </div>
+
+      <div class="alerts-grid">
+        <!-- Simulate -->
+        <div class="card">
+          <div class="card-title"><span class="title-icon">⚡</span> Simulate Alerts</div>
+          <p class="card-desc">Test how audio events appear as visual notifications.</p>
+          <div class="alert-btns">
+            <button class="btn btn-alert alert-info"     onclick="triggerVisualAlert('info',     '📧 New Message',    'You have a new message from the support team.')">📧 Message Alert</button>
+            <button class="btn btn-alert alert-warning"  onclick="triggerVisualAlert('warning',  '⚠️ Battery Low',    'Your device battery is below 15%.')">⚠️ Warning Alert</button>
+            <button class="btn btn-alert alert-danger"   onclick="triggerVisualAlert('danger',   '🚨 Emergency Alert','Emergency services notification in your area.')">🚨 Emergency</button>
+            <button class="btn btn-alert alert-success"  onclick="triggerVisualAlert('success',  '✅ Task Completed', 'Your document has been saved successfully.')">✅ Success</button>
+            <button class="btn btn-alert alert-doorbell" onclick="triggerVisualAlert('doorbell', '🔔 Doorbell',       'Someone is at the door.')">🔔 Doorbell</button>
+            <button class="btn btn-alert alert-phone"    onclick="triggerVisualAlert('phone',    '📞 Incoming Call',  'Incoming call from: Mom')">📞 Phone Call</button>
+          </div>
+        </div>
+
+        <!-- Settings -->
+        <div class="card">
+          <div class="card-title"><span class="title-icon">⚙️</span> Alert Settings</div>
+
+          <div class="field" style="margin-bottom:18px">
+            <label for="flash-intensity" class="label">Flash Intensity: <span id="flash-value" aria-live="polite">Medium</span></label>
+            <input type="range" id="flash-intensity" class="ctrl-range" min="1" max="3" step="1" value="2" aria-label="Flash intensity"/>
+          </div>
+
+          <div class="field" style="margin-bottom:20px">
+            <label for="flash-color" class="label">Flash Color</label>
+            <select id="flash-color" class="ctrl-select" aria-label="Alert flash color">
+              <option value="default">Default (matches alert type)</option>
+              <option value="yellow">Yellow (high visibility)</option>
+              <option value="white">White (bright)</option>
+              <option value="cyan">Cyan (cool)</option>
+            </select>
+          </div>
+
+          <div class="toggle-row">
+            <label class="toggle-label" for="banner-toggle">Show alert banner</label>
+            <button id="banner-toggle" class="toggle-btn" role="switch" aria-checked="true" aria-label="Toggle alert banners">
+              <span class="toggle-thumb"></span>
+            </button>
+          </div>
+          <div class="toggle-row">
+            <label class="toggle-label" for="screen-flash-toggle">Screen flash effect</label>
+            <button id="screen-flash-toggle" class="toggle-btn" role="switch" aria-checked="true" aria-label="Toggle screen flash">
+              <span class="toggle-thumb"></span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Alert Log -->
+        <div class="card alerts-log-card">
+          <div class="card-title"><span class="title-icon">📋</span> Alert History</div>
+          <div id="alert-log" class="alert-log" role="log" aria-live="polite" aria-label="Alert history">
+            <p class="log-placeholder">Triggered alerts will appear here…</p>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="clearAlertLog()">Clear History</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 04: SETTINGS ── -->
+  <section id="settings-section" class="section section-alt" aria-labelledby="settings-heading">
+    <div class="section-inner">
+      <div class="section-header">
+        <div class="sec-num" aria-hidden="true">04</div>
+        <div>
+          <h2 id="settings-heading" class="section-title">Display & Accessibility Settings</h2>
+          <p class="section-desc">Fully customize your visual experience. All settings are saved to your browser and persist across sessions automatically.</p>
+        </div>
+      </div>
+
+      <div class="settings-grid">
+
+        <!-- Color & Contrast -->
+        <div class="card settings-card">
+          <div class="card-title"><span class="title-icon">🎨</span> Color & Contrast</div>
+          <div class="theme-grid" role="radiogroup" aria-label="Color themes">
+            <button class="theme-btn active" data-theme="default"       aria-pressed="true"  aria-label="Default theme">      <span class="theme-prev tp-default"></span>Default</button>
+            <button class="theme-btn"        data-theme="high-contrast" aria-pressed="false" aria-label="High contrast theme"> <span class="theme-prev tp-hc"></span>High Contrast</button>
+            <button class="theme-btn"        data-theme="dark"          aria-pressed="false" aria-label="Dark theme">          <span class="theme-prev tp-dark"></span>Dark</button>
+            <button class="theme-btn"        data-theme="deuteranopia"  aria-pressed="false" aria-label="Deuteranopia theme">  <span class="theme-prev tp-deut"></span>Deuteranopia</button>
+            <button class="theme-btn"        data-theme="tritanopia"    aria-pressed="false" aria-label="Tritanopia theme">    <span class="theme-prev tp-trit"></span>Tritanopia</button>
+            <button class="theme-btn"        data-theme="monochrome"    aria-pressed="false" aria-label="Monochrome theme">    <span class="theme-prev tp-mono"></span>Monochrome</button>
+          </div>
+        </div>
+
+        <!-- Typography -->
+        <div class="card settings-card">
+          <div class="card-title"><span class="title-icon">🔤</span> Typography</div>
+          <div class="field">
+            <label class="label">Font Size: <span id="font-size-display" aria-live="polite">16px</span></label>
+            <div class="fs-btns" role="group" aria-label="Font size presets">
+              <button id="fs-sm" class="btn btn-ghost btn-sm" aria-label="Small 14px">Small</button>
+              <button id="fs-md" class="btn btn-ghost btn-sm" aria-label="Medium 16px">Medium</button>
+              <button id="fs-lg" class="btn btn-ghost btn-sm" aria-label="Large 20px">Large</button>
+              <button id="fs-xl" class="btn btn-ghost btn-sm" aria-label="Extra large 24px">XL</button>
+            </div>
+          </div>
+          <div class="toggle-row">
+            <label class="toggle-label" for="dyslexia-toggle">OpenDyslexic font</label>
+            <button id="dyslexia-toggle" class="toggle-btn" role="switch" aria-checked="false" aria-label="Toggle OpenDyslexic font"><span class="toggle-thumb"></span></button>
+          </div>
+          <div class="toggle-row">
+            <label class="toggle-label" for="line-spacing-toggle">Increased line spacing</label>
+            <button id="line-spacing-toggle" class="toggle-btn" role="switch" aria-checked="false" aria-label="Toggle line spacing"><span class="toggle-thumb"></span></button>
+          </div>
+          <div class="toggle-row">
+            <label class="toggle-label" for="letter-spacing-toggle">Increased letter spacing</label>
+            <button id="letter-spacing-toggle" class="toggle-btn" role="switch" aria-checked="false" aria-label="Toggle letter spacing"><span class="toggle-thumb"></span></button>
+          </div>
+        </div>
+
+        <!-- Motion & Focus -->
+        <div class="card settings-card">
+          <div class="card-title"><span class="title-icon">🎯</span> Motion & Focus</div>
+          <div class="toggle-row">
+            <label class="toggle-label" for="reduce-motion-toggle">Reduce animations</label>
+            <button id="reduce-motion-toggle" class="toggle-btn" role="switch" aria-checked="false" aria-label="Toggle reduced motion"><span class="toggle-thumb"></span></button>
+          </div>
+          <div class="toggle-row">
+            <label class="toggle-label" for="focus-highlight-toggle">Enhanced focus highlight</label>
+            <button id="focus-highlight-toggle" class="toggle-btn" role="switch" aria-checked="false" aria-label="Toggle enhanced focus"><span class="toggle-thumb"></span></button>
+          </div>
+          <div class="toggle-row">
+            <label class="toggle-label" for="reading-guide-toggle2">Reading guide line</label>
+            <button id="reading-guide-toggle2" class="toggle-btn" role="switch" aria-checked="false" aria-label="Toggle reading guide"><span class="toggle-thumb"></span></button>
+          </div>
+          <div class="toggle-row">
+            <label class="toggle-label" for="cursor-toggle">Large cursor mode</label>
+            <button id="cursor-toggle" class="toggle-btn" role="switch" aria-checked="false" aria-label="Toggle large cursor"><span class="toggle-thumb"></span></button>
+          </div>
+        </div>
+
+        <!-- Keyboard Shortcuts -->
+        <div class="card settings-card shortcuts-card">
+          <div class="card-title"><span class="title-icon">⌨️</span> Keyboard Shortcuts</div>
+          <dl class="shortcut-list">
+            <dt><kbd>Alt</kbd>+<kbd>S</kbd></dt><dd>Speak text (TTS)</dd>
+            <dt><kbd>Alt</kbd>+<kbd>L</kbd></dt><dd>Start / stop listening</dd>
+            <dt><kbd>Alt</kbd>+<kbd>C</kbd></dt><dd>Toggle live captions</dd>
+            <dt><kbd>Alt</kbd>+<kbd>H</kbd></dt><dd>Toggle high contrast</dd>
+            <dt><kbd>Alt</kbd>+<kbd>+</kbd></dt><dd>Increase font size</dd>
+            <dt><kbd>Alt</kbd>+<kbd>−</kbd></dt><dd>Decrease font size</dd>
+            <dt><kbd>Esc</kbd></dt><dd>Stop speech / dismiss alert</dd>
+          </dl>
+        </div>
+
+      </div>
+
+      <div class="reset-bar">
+        <button id="btn-reset-settings" class="btn btn-danger btn-sm" aria-label="Reset all settings to defaults">Reset All to Default</button>
+        <span id="reset-confirm" class="reset-confirm" aria-live="polite"></span>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Alert Banner -->
+<div id="alert-banner" class="alert-banner" role="alert" aria-live="assertive" hidden>
+  <div class="alert-banner-inner">
+    <span id="alert-banner-title" class="alert-banner-title"></span>
+    <span id="alert-banner-msg"   class="alert-banner-msg"></span>
+    <button id="alert-dismiss" class="alert-dismiss" aria-label="Dismiss alert">×</button>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="site-footer" role="contentinfo">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-brand-mark" aria-hidden="true">A</div>
+        <span class="footer-brand-name">AccessBridge</span>
+      </div>
+      <p class="footer-meta">
+        Built for NC TSA Software Development · Accessibility for All<br/>
+        WCAG 2.1 AA · WAI-ARIA 1.1 · Keyboard Navigable · Screen Reader Optimized
+      </p>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════
+     ALL JAVASCRIPT INLINED
+════════════════════════════════════════════ -->
+<script>
+'use strict';
+
+/* ─── APP STATE ─── */
+const AppState = {
+  captionsEnabled:false, readingGuideEnabled:false, currentTheme:'default',
+  fontSize:16, dyslexiaMode:false, reducedMotion:false, enhancedFocus:false,
+  largeCursor:false, lineSpacing:false, letterSpacing:false,
+  bannerAlertsEnabled:true, screenFlashEnabled:true,
+};
+
+/* ─── INIT ─── */
+document.addEventListener('DOMContentLoaded', () => {
+  loadSettings(); initToolbar(); initKeyboardShortcuts();
+  initReadingGuide(); initCaptionBar(); initSmoothScroll(); announcePageLoad();
+});
+
+function saveSettings(){try{localStorage.setItem('accessbridge-settings',JSON.stringify(AppState))}catch(e){}}
+function loadSettings(){
+  try{const s=localStorage.getItem('accessbridge-settings');
+    if(!s)return;Object.assign(AppState,JSON.parse(s));applyAllSettings()}catch(e){}
+}
+function applyAllSettings(){
+  applyTheme(AppState.currentTheme);applyFontSize(AppState.fontSize);
+  applyDyslexiaMode(AppState.dyslexiaMode);applyReducedMotion(AppState.reducedMotion);
+  applyEnhancedFocus(AppState.enhancedFocus);applyLargeCursor(AppState.largeCursor);
+  applyLineSpacing(AppState.lineSpacing);applyLetterSpacing(AppState.letterSpacing);
+  syncToggleButton('btn-captions',AppState.captionsEnabled);
+  syncToggleButton('btn-reading-guide',AppState.readingGuideEnabled);
+  syncToggleButton('btn-dyslexia',AppState.dyslexiaMode);
+  if(AppState.captionsEnabled)document.getElementById('caption-bar').removeAttribute('hidden');
+  if(AppState.readingGuideEnabled)document.getElementById('reading-guide').classList.add('active');
+}
+
+function initToolbar(){
+  document.getElementById('btn-font-down').addEventListener('click',()=>{applyFontSize(Math.max(12,AppState.fontSize-2));saveSettings()});
+  document.getElementById('btn-font-up').addEventListener('click',()=>{applyFontSize(Math.min(32,AppState.fontSize+2));saveSettings()});
+  document.getElementById('btn-dyslexia').addEventListener('click',()=>{
+    AppState.dyslexiaMode=!AppState.dyslexiaMode;applyDyslexiaMode(AppState.dyslexiaMode);
+    syncToggleButton('btn-dyslexia',AppState.dyslexiaMode);saveSettings();
+    announceToScreenReader(AppState.dyslexiaMode?'Dyslexia font enabled':'Dyslexia font disabled');
+  });
+  const themes=['default','dark','high-contrast','deuteranopia','tritanopia','monochrome'];
+  document.getElementById('btn-contrast').addEventListener('click',()=>{
+    const i=themes.indexOf(AppState.currentTheme);
+    applyTheme(themes[(i+1)%themes.length]);saveSettings();
+    announceToScreenReader(`Theme: ${AppState.currentTheme.replace('-',' ')}`);
+  });
+  document.getElementById('btn-reading-guide').addEventListener('click',()=>{
+    AppState.readingGuideEnabled=!AppState.readingGuideEnabled;
+    document.getElementById('reading-guide').classList.toggle('active',AppState.readingGuideEnabled);
+    syncToggleButton('btn-reading-guide',AppState.readingGuideEnabled);saveSettings();
+    announceToScreenReader(AppState.readingGuideEnabled?'Reading guide on':'Reading guide off');
+  });
+  document.getElementById('btn-captions').addEventListener('click',toggleCaptions);
+}
+
+function initKeyboardShortcuts(){
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'){if(typeof stopSpeech==='function')stopSpeech();dismissAlert();return}
+    if(!e.altKey)return;
+    switch(e.key.toLowerCase()){
+      case's':e.preventDefault();if(typeof speakText==='function')speakText();break;
+      case'l':e.preventDefault();if(typeof toggleListening==='function')toggleListening();break;
+      case'c':e.preventDefault();toggleCaptions();break;
+      case'h':e.preventDefault();applyTheme(AppState.currentTheme==='high-contrast'?'default':'high-contrast');saveSettings();break;
+      case'+':case'=':e.preventDefault();applyFontSize(Math.min(32,AppState.fontSize+2));saveSettings();break;
+      case'-':e.preventDefault();applyFontSize(Math.max(12,AppState.fontSize-2));saveSettings();break;
+    }
+  });
+}
+
+function initReadingGuide(){
+  const g=document.getElementById('reading-guide');
+  document.addEventListener('mousemove',e=>{
+    if(!AppState.readingGuideEnabled)return;
+    g.style.top=(e.clientY-17)+'px';
+  });
+}
+
+function initCaptionBar(){
+  document.getElementById('alert-dismiss')?.addEventListener('click',dismissAlert);
+}
+
+function toggleCaptions(){
+  AppState.captionsEnabled=!AppState.captionsEnabled;
+  const bar=document.getElementById('caption-bar');
+  if(AppState.captionsEnabled){
+    bar.removeAttribute('hidden');
+    updateCaption('Captions are now active. Use Text-to-Speech or Listening to see captions here.');
+  } else {bar.setAttribute('hidden','')}
+  syncToggleButton('btn-captions',AppState.captionsEnabled);saveSettings();
+  announceToScreenReader(AppState.captionsEnabled?'Live captions enabled':'Live captions disabled');
+}
+
+function updateCaption(text){
+  if(!AppState.captionsEnabled)return;
+  const el=document.getElementById('caption-text');
+  if(el)el.textContent=text;
+}
+
+function applyTheme(n){
+  document.body.classList.remove('theme-default','theme-high-contrast','theme-dark','theme-deuteranopia','theme-tritanopia','theme-monochrome');
+  document.body.classList.add(`theme-${n}`);AppState.currentTheme=n;
+  document.querySelectorAll('.theme-btn').forEach(b=>{
+    const a=b.dataset.theme===n;b.setAttribute('aria-pressed',String(a));b.classList.toggle('active',a);
+  });
+}
+function applyFontSize(s){
+  AppState.fontSize=s;document.documentElement.style.setProperty('--fs-base',`${s}px`);
+  document.body.style.fontSize=`${s}px`;
+  const d=document.getElementById('font-size-display');if(d)d.textContent=`${s}px`;
+}
+function applyDyslexiaMode(e){AppState.dyslexiaMode=e;document.body.classList.toggle('dyslexia-mode',e);const t=document.getElementById('dyslexia-toggle');if(t)t.setAttribute('aria-checked',String(e));syncToggleButton('btn-dyslexia',e)}
+function applyReducedMotion(e){AppState.reducedMotion=e;document.body.classList.toggle('reduce-motion',e)}
+function applyEnhancedFocus(e){AppState.enhancedFocus=e;document.body.classList.toggle('enhanced-focus',e)}
+function applyLargeCursor(e){AppState.largeCursor=e;document.body.classList.toggle('large-cursor',e)}
+function applyLineSpacing(e){AppState.lineSpacing=e;document.body.classList.toggle('increased-line-spacing',e)}
+function applyLetterSpacing(e){AppState.letterSpacing=e;document.body.classList.toggle('increased-letter-spacing',e)}
+
+let _lr=null;
+function announceToScreenReader(msg){
+  if(!_lr){_lr=document.createElement('div');_lr.setAttribute('aria-live','polite');_lr.setAttribute('aria-atomic','true');_lr.className='sr-only';_lr.style.cssText='position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;';document.body.appendChild(_lr)}
+  _lr.textContent='';requestAnimationFrame(()=>{_lr.textContent=msg});
+}
+function announcePageLoad(){
+  setTimeout(()=>announceToScreenReader('AccessBridge loaded. Accessibility platform with text-to-speech, speech-to-text, visual alerts, and display customization. Use Alt+S to speak, Alt+L to listen, Alt+H for high contrast.'),1000);
+}
+function syncToggleButton(id,state){const b=document.getElementById(id);if(b)b.setAttribute('aria-pressed',String(state))}
+function dismissAlert(){
+  const b=document.getElementById('alert-banner');
+  if(b&&b.classList.contains('show')){b.classList.remove('show');setTimeout(()=>b.setAttribute('hidden',''),300)}
+}
+function initSmoothScroll(){
+  document.querySelectorAll('a[href^="#"]').forEach(a=>{
+    a.addEventListener('click',e=>{
+      const t=document.querySelector(a.getAttribute('href'));if(!t)return;e.preventDefault();
+      t.scrollIntoView({behavior:'smooth',block:'start'});t.setAttribute('tabindex','-1');t.focus({preventScroll:true});
+    });
+  });
+}
+
+window.AppState=AppState;window.updateCaption=updateCaption;window.announceToScreenReader=announceToScreenReader;
+window.applyTheme=applyTheme;window.applyFontSize=applyFontSize;window.applyDyslexiaMode=applyDyslexiaMode;
+window.saveSettings=saveSettings;window.dismissAlert=dismissAlert;
+</script>
+
+<script>
+/* ─── TTS ─── */
+'use strict';
+const TTS={utterance:null,voices:[],isPaused:false,isSpeaking:false,words:[],wordIndex:0};
+
+document.addEventListener('DOMContentLoaded',()=>{
+  if(!('speechSynthesis'in window)){showTTSError('Your browser does not support Text-to-Speech. Please use Chrome or Edge.');return}
+  loadVoices();window.speechSynthesis.onvoiceschanged=loadVoices;bindTTSControls();
+});
+
+function loadVoices(){
+  TTS.voices=window.speechSynthesis.getVoices();const s=document.getElementById('voice-select');if(!s)return;
+  s.innerHTML='';if(TTS.voices.length===0){setTimeout(loadVoices,500);return}
+  const sorted=[...TTS.voices].sort((a,b)=>{const ae=a.lang.startsWith('en')?0:1;const be=b.lang.startsWith('en')?0:1;return ae-be||a.name.localeCompare(b.name)});
+  sorted.forEach((v,i)=>{const o=document.createElement('option');o.value=i;o.textContent=`${v.name} (${v.lang})`;if(v.default)o.selected=true;s.appendChild(o)});
+}
+
+function bindTTSControls(){
+  const ta=document.getElementById('tts-input');
+  if(ta){
+    ta.addEventListener('input',()=>{const c=ta.value.length;const ct=document.getElementById('tts-char-count');if(ct)ct.textContent=`${c.toLocaleString()} character${c!==1?'s':''}`});
+    ta.addEventListener('keydown',e=>{if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart,en=ta.selectionEnd;ta.value=ta.value.substring(0,s)+'    '+ta.value.substring(en);ta.selectionStart=ta.selectionEnd=s+4}});
+  }
+  const sr=document.getElementById('speed-range');if(sr)sr.addEventListener('input',()=>{const v=parseFloat(sr.value).toFixed(1);document.getElementById('speed-value').textContent=`${v}×`;sr.setAttribute('aria-valuenow',v)});
+  const pr=document.getElementById('pitch-range');if(pr)pr.addEventListener('input',()=>{const v=parseFloat(pr.value).toFixed(1);document.getElementById('pitch-value').textContent=v;pr.setAttribute('aria-valuenow',v)});
+  const vr=document.getElementById('volume-range');if(vr)vr.addEventListener('input',()=>{const v=Math.round(parseFloat(vr.value)*100);document.getElementById('volume-value').textContent=`${v}%`;vr.setAttribute('aria-valuenow',v)});
+  document.getElementById('btn-speak')?.addEventListener('click',speakText);
+  document.getElementById('btn-pause')?.addEventListener('click',pauseResumeSpeech);
+  document.getElementById('btn-stop')?.addEventListener('click',stopSpeech);
+  document.getElementById('btn-clear-tts')?.addEventListener('click',clearTTSInput);
+}
+
+function speakText(){
+  const ta=document.getElementById('tts-input');const text=ta?.value?.trim();
+  if(!text){setTTSStatus('⚠ Please enter some text to speak.');announceToScreenReader('No text entered.');return}
+  window.speechSynthesis.cancel();TTS.isSpeaking=false;TTS.isPaused=false;
+  const u=new SpeechSynthesisUtterance(text);TTS.utterance=u;
+  const vs=document.getElementById('voice-select');
+  if(vs&&TTS.voices.length>0){const i=parseInt(vs.value);if(!isNaN(i)&&TTS.voices[i])u.voice=TTS.voices[i]}
+  u.rate=parseFloat(document.getElementById('speed-range')?.value||1);
+  u.pitch=parseFloat(document.getElementById('pitch-range')?.value||1);
+  u.volume=parseFloat(document.getElementById('volume-range')?.value||1);
+  TTS.words=text.split(/\s+/);TTS.wordIndex=0;showWordHighlight('');
+  u.onstart=()=>{TTS.isSpeaking=true;setTTSStatus('🔊 Speaking…');setSpeakingUIState(true);announceToScreenReader('Speech started');updateCaption(text.substring(0,80)+(text.length>80?'…':''))};
+  u.onboundary=e=>{if(e.name!=='word')return;const w=text.substring(e.charIndex,e.charIndex+(e.charLength||0));if(w){showWordHighlight(w);updateCaption(getContextSnippet(text,e.charIndex))}};
+  u.onpause=()=>{TTS.isPaused=true;setTTSStatus('⏸ Paused');const pb=document.getElementById('btn-pause');if(pb){pb.innerHTML='▶ Resume';pb.setAttribute('aria-label','Resume speech')}};
+  u.onresume=()=>{TTS.isPaused=false;setTTSStatus('🔊 Speaking…');const pb=document.getElementById('btn-pause');if(pb){pb.innerHTML='⏸ Pause';pb.setAttribute('aria-label','Pause speech')}};
+  u.onend=()=>{TTS.isSpeaking=false;TTS.isPaused=false;setTTSStatus('✅ Finished speaking');setSpeakingUIState(false);showWordHighlight('');announceToScreenReader('Speech finished');updateCaption('')};
+  u.onerror=e=>{if(e.error==='interrupted'||e.error==='canceled')return;setTTSStatus(`❌ Speech error: ${e.error}`);setSpeakingUIState(false)};
+  window.speechSynthesis.speak(u);
+}
+function pauseResumeSpeech(){if(!TTS.isSpeaking)return;TTS.isPaused?window.speechSynthesis.resume():window.speechSynthesis.pause()}
+function stopSpeech(){window.speechSynthesis.cancel();TTS.isSpeaking=false;TTS.isPaused=false;setTTSStatus('⏹ Stopped');setSpeakingUIState(false);showWordHighlight('');updateCaption('');announceToScreenReader('Speech stopped')}
+function clearTTSInput(){stopSpeech();const ta=document.getElementById('tts-input');if(ta)ta.value='';const ct=document.getElementById('tts-char-count');if(ct)ct.textContent='0 characters';setTTSStatus('Ready to speak');showWordHighlight('')}
+function setSpeakingUIState(s){
+  const sb=document.getElementById('btn-speak'),pb=document.getElementById('btn-pause'),stb=document.getElementById('btn-stop');
+  if(sb)sb.disabled=s;if(pb){pb.disabled=!s;pb.innerHTML='⏸ Pause';pb.setAttribute('aria-label','Pause speech')}if(stb)stb.disabled=!s;
+}
+function setTTSStatus(m){const e=document.getElementById('tts-status');if(e)e.textContent=m}
+function showTTSError(m){setTTSStatus(`❌ ${m}`);const b=document.getElementById('btn-speak');if(b)b.disabled=true}
+function showWordHighlight(w){
+  const a=document.getElementById('tts-highlight-area');if(!a)return;
+  if(!w){a.textContent=TTS.isSpeaking?'…':'Currently speaking word will appear here';a.style.color='';a.style.fontStyle='italic';return}
+  a.textContent=`"${w}"`;a.style.color='var(--blue)';a.style.fontStyle='normal';a.style.fontWeight='700';
+}
+function getContextSnippet(t,i){const s=Math.max(0,i-20),e=Math.min(t.length,i+60);let r=t.substring(s,e);if(s>0)r='…'+r;if(e<t.length)r+='…';return r}
+
+window.speakText=speakText;window.stopSpeech=stopSpeech;window.pauseResumeSpeech=pauseResumeSpeech;
+</script>
+
+<script>
+/* ─── STT ─── */
+'use strict';
+const STT={recognition:null,isListening:false,transcript:'',interimText:''};
+
+document.addEventListener('DOMContentLoaded',()=>{
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){setSTTStatus('⚠ Speech recognition not supported. Please use Chrome or Edge.');const b=document.getElementById('btn-listen');if(b){b.disabled=true;b.title='Not supported'}return}
+  STT.recognition=new SR();configureRecognition();bindSTTControls();
+});
+
+function configureRecognition(){
+  const r=STT.recognition;r.continuous=true;r.interimResults=true;r.maxAlternatives=1;
+  r.lang=document.getElementById('stt-language')?.value||'en-US';
+  r.onstart=()=>{STT.isListening=true;setListeningUIState(true);setSTTStatus('🎙️ Listening… speak clearly');announceToScreenReader('Listening started.');animateSoundBars(true)};
+  r.onresult=e=>{
+    let interim='',final='';
+    for(let i=e.resultIndex;i<e.results.length;i++){const t=e.results[i][0].transcript;if(e.results[i].isFinal)final+=t+' ';else interim+=t}
+    if(final){STT.transcript+=final;renderTranscript();updateCaption(final.trim())}
+    STT.interimText=interim;renderInterim();
+  };
+  r.onerror=e=>{
+    if(e.error==='no-speech')return;
+    if(e.error==='not-allowed')setSTTStatus('❌ Microphone access denied. Please allow microphone permission.');
+    else if(e.error==='network')setSTTStatus('❌ Network error. Check your connection.');
+    else setSTTStatus(`❌ Error: ${e.error}`);
+    STT.isListening=false;setListeningUIState(false);animateSoundBars(false);
+  };
+  r.onend=()=>{
+    if(STT.isListening){try{r.start()}catch(e){}}
+    else{setSTTStatus('⏹ Stopped. Click "Start Listening" to begin again.');setListeningUIState(false);animateSoundBars(false)}
+  };
+}
+
+function bindSTTControls(){
+  document.getElementById('btn-listen')?.addEventListener('click',startListening);
+  document.getElementById('btn-stop-listen')?.addEventListener('click',stopListening);
+  document.getElementById('btn-copy-transcript')?.addEventListener('click',copyTranscript);
+  document.getElementById('btn-clear-transcript')?.addEventListener('click',clearTranscript);
+  document.getElementById('stt-language')?.addEventListener('change',e=>{
+    if(STT.recognition){STT.recognition.lang=e.target.value;if(STT.isListening){stopListening();setTimeout(startListening,300)}}
+  });
+}
+
+function startListening(){
+  if(!STT.recognition||STT.isListening)return;
+  const ls=document.getElementById('stt-language');if(ls)STT.recognition.lang=ls.value;
+  try{STT.recognition.start();STT.isListening=true}catch(e){if(e.name==='InvalidStateError'){STT.isListening=true;setListeningUIState(true)}else setSTTStatus(`❌ Could not start: ${e.message}`)}
+}
+function stopListening(){
+  if(!STT.recognition)return;STT.isListening=false;STT.interimText='';renderInterim();
+  STT.recognition.stop();setListeningUIState(false);animateSoundBars(false);
+  setSTTStatus('⏹ Stopped.');announceToScreenReader('Listening stopped.');
+}
+function toggleListening(){STT.isListening?stopListening():startListening()}
+
+function renderTranscript(){
+  const a=document.getElementById('stt-transcript');if(!a)return;
+  if(!STT.transcript){a.innerHTML='<span class="transcript-placeholder">Your transcription will appear here in real time…</span>';setTranscriptButtonState(false);return}
+  a.textContent=STT.transcript;a.scrollTop=a.scrollHeight;setTranscriptButtonState(true);
+}
+function renderInterim(){const i=document.getElementById('stt-interim');if(i)i.textContent=STT.interimText}
+async function copyTranscript(){
+  if(!STT.transcript)return;
+  try{await navigator.clipboard.writeText(STT.transcript.trim());setSTTStatus('✅ Transcript copied!');announceToScreenReader('Transcript copied');setTimeout(()=>setSTTStatus(STT.isListening?'🎙️ Listening…':'Ready'),3000)}
+  catch(e){const a=document.getElementById('stt-transcript');if(a){const r=document.createRange();r.selectNode(a);window.getSelection().removeAllRanges();window.getSelection().addRange(r);document.execCommand('copy');setSTTStatus('✅ Transcript copied!')}}
+}
+function clearTranscript(){
+  STT.transcript='';STT.interimText='';renderTranscript();renderInterim();
+  setTranscriptButtonState(false);setSTTStatus(STT.isListening?'🎙️ Listening…':'Transcript cleared.');announceToScreenReader('Transcript cleared');
+}
+function setListeningUIState(l){
+  const sb=document.getElementById('btn-listen'),tb=document.getElementById('btn-stop-listen'),mi=document.getElementById('mic-icon'),sb2=document.getElementById('sound-bars');
+  if(sb)sb.disabled=l;if(tb)tb.disabled=!l;
+  if(mi)mi.classList.toggle('listening',l);if(sb2)sb2.classList.toggle('listening',l);
+}
+function setTranscriptButtonState(h){const c=document.getElementById('btn-copy-transcript'),cl=document.getElementById('btn-clear-transcript');if(c)c.disabled=!h;if(cl)cl.disabled=!h}
+function setSTTStatus(m){const e=document.getElementById('stt-status');if(e)e.textContent=m}
+function animateSoundBars(a){
+  document.querySelectorAll('#sound-bars .bar').forEach((b,i)=>{
+    if(a)b.style.animation=`bar-dance ${.4+Math.random()*.4}s ease-in-out ${i*.08}s infinite alternate`;
+    else{b.style.animation='';b.style.height='6px'}
+  });
+}
+
+window.startListening=startListening;window.stopListening=stopListening;window.toggleListening=toggleListening;
+</script>
+
+<script>
+/* ─── ALERTS ─── */
+'use strict';
+const ALERT_CONFIGS={
+  info:    {color:'#3B82F6',textColor:'#1D4ED8',bg:'#EFF6FF',border:'#BFDBFE',label:'Info'},
+  warning: {color:'#F59E0B',textColor:'#92400E',bg:'#FFFBEB',border:'#FDE68A',label:'Warning'},
+  danger:  {color:'#EF4444',textColor:'#991B1B',bg:'#FEF2F2',border:'#FECACA',label:'Emergency'},
+  success: {color:'#10B981',textColor:'#065F46',bg:'#F0FDF4',border:'#BBF7D0',label:'Success'},
+  doorbell:{color:'#8B5CF6',textColor:'#5B21B6',bg:'#F5F3FF',border:'#DDD6FE',label:'Doorbell'},
+  phone:   {color:'#06B6D4',textColor:'#0E7490',bg:'#ECFEFF',border:'#A5F3FC',label:'Phone'},
+};
+let alertBannerTimeout=null,alertFlashTimeout=null,alertCount=0;
+
+function triggerVisualAlert(type,title,message){
+  const cfg=ALERT_CONFIGS[type]||ALERT_CONFIGS.info;
+  const intensity=getFlashIntensity();
+  if(AppState.screenFlashEnabled!==false)triggerScreenFlash(type,intensity);
+  if(AppState.bannerAlertsEnabled!==false)showAlertBanner(title,message,cfg);
+  addToAlertLog(type,title,message,cfg);
+  announceToScreenReader(`${cfg.label} alert: ${title}. ${message}`);
+  updateCaption(`🔔 ${title}: ${message}`);
+}
+
+function triggerScreenFlash(type,intensity){
+  const o=document.getElementById('visual-alert-overlay');if(!o)return;
+  o.className='';clearTimeout(alertFlashTimeout);
+  const op={1:'.25',2:'.5',3:'.75'};o.style.setProperty('--flash-opacity',op[intensity]||'.5');
+  void o.offsetWidth;o.classList.add(`flash-${type}`);
+  alertFlashTimeout=setTimeout(()=>{o.className=''},2000);
+}
+
+function showAlertBanner(title,message,cfg){
+  const b=document.getElementById('alert-banner');
+  const te=document.getElementById('alert-banner-title');
+  const me=document.getElementById('alert-banner-msg');
+  if(!b||!te||!me)return;
+  b.style.borderTop=`4px solid ${cfg.color}`;te.textContent=title;me.textContent=message;
+  b.removeAttribute('hidden');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>b.classList.add('show')));
+  clearTimeout(alertBannerTimeout);alertBannerTimeout=setTimeout(dismissAlert,6000);
+}
+
+function addToAlertLog(type,title,message,cfg){
+  const log=document.getElementById('alert-log');if(!log)return;
+  const ph=log.querySelector('.log-placeholder');if(ph)ph.remove();
+  const t=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  alertCount++;
+  const e=document.createElement('div');e.className=`log-entry log-${type}`;
+  e.innerHTML=`<span class="log-time">${t}</span><div><strong>${escapeHTML(title)}</strong><div style="font-size:.82rem;opacity:.8;margin-top:2px">${escapeHTML(message)}</div></div>`;
+  log.insertBefore(e,log.firstChild);
+  const entries=log.querySelectorAll('.log-entry');if(entries.length>20)entries[entries.length-1].remove();
+}
+
+function clearAlertLog(){
+  const log=document.getElementById('alert-log');if(!log)return;
+  log.innerHTML='<p class="log-placeholder">Triggered alerts will appear here…</p>';
+  alertCount=0;announceToScreenReader('Alert history cleared');
+}
+
+function getFlashIntensity(){return parseInt(document.getElementById('flash-intensity')?.value||2)}
+function getFlashColor(d){const s=document.getElementById('flash-color');const c={yellow:'#FCD34D',white:'#FFFFFF',cyan:'#22D3EE',default:d};return c[s?.value||'default']||d}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  const fs=document.getElementById('flash-intensity');
+  if(fs)fs.addEventListener('input',()=>{const l={1:'Low',2:'Medium',3:'High'};const lv=document.getElementById('flash-value');if(lv)lv.textContent=l[fs.value]||'Medium'});
+  const bt=document.getElementById('banner-toggle');
+  if(bt)bt.addEventListener('click',()=>{const n=bt.getAttribute('aria-checked')!=='true';bt.setAttribute('aria-checked',String(n));AppState.bannerAlertsEnabled=n;announceToScreenReader(n?'Alert banners enabled':'Alert banners disabled')});
+  const ft=document.getElementById('screen-flash-toggle');
+  if(ft)ft.addEventListener('click',()=>{const n=ft.getAttribute('aria-checked')!=='true';ft.setAttribute('aria-checked',String(n));AppState.screenFlashEnabled=n;announceToScreenReader(n?'Screen flash enabled':'Screen flash disabled')});
+});
+
+function escapeHTML(s){const d=document.createElement('div');d.appendChild(document.createTextNode(s));return d.innerHTML}
+
+window.triggerVisualAlert=triggerVisualAlert;window.clearAlertLog=clearAlertLog;
+</script>
+
+<script>
+/* ─── SETTINGS ─── */
+'use strict';
+document.addEventListener('DOMContentLoaded',()=>{initThemeButtons();initFontSizeButtons();initToggleSwitches();initResetButton();syncSettingsUI()});
+
+function initThemeButtons(){
+  document.querySelectorAll('.theme-btn').forEach(b=>{
+    b.addEventListener('click',()=>{if(b.dataset.theme){applyTheme(b.dataset.theme);saveSettings();announceToScreenReader(`Theme: ${b.dataset.theme.replace(/-/g,' ')}`)}});
+  });
+}
+
+function initFontSizeButtons(){
+  const sizes={14:'fs-sm',16:'fs-md',20:'fs-lg',24:'fs-xl'};
+  Object.entries(sizes).forEach(([s,id])=>{
+    const b=document.getElementById(id);if(!b)return;
+    b.addEventListener('click',()=>{
+      applyFontSize(parseInt(s));saveSettings();announceToScreenReader(`Font size ${s}px`);
+      Object.values(sizes).forEach(bid=>{const bb=document.getElementById(bid);if(bb){bb.classList.remove('btn-primary');bb.classList.add('btn-ghost')}});
+      b.classList.remove('btn-ghost');b.classList.add('btn-primary');
+    });
+  });
+  highlightActiveFontBtn();
+}
+
+function highlightActiveFontBtn(){
+  const m={14:'fs-sm',16:'fs-md',20:'fs-lg',24:'fs-xl'};const aid=m[AppState.fontSize];if(!aid)return;
+  ['fs-sm','fs-md','fs-lg','fs-xl'].forEach(id=>{const b=document.getElementById(id);if(!b)return;const a=id===aid;b.classList.toggle('btn-primary',a);b.classList.toggle('btn-ghost',!a)});
+}
+
+const TOGGLE_MAP=[
+  {id:'dyslexia-toggle',stateKey:'dyslexiaMode',apply:applyDyslexiaMode,onMsg:'OpenDyslexic font enabled',offMsg:'OpenDyslexic font disabled'},
+  {id:'line-spacing-toggle',stateKey:'lineSpacing',apply:applyLineSpacing,onMsg:'Increased line spacing on',offMsg:'Line spacing reset'},
+  {id:'letter-spacing-toggle',stateKey:'letterSpacing',apply:applyLetterSpacing,onMsg:'Increased letter spacing on',offMsg:'Letter spacing reset'},
+  {id:'reduce-motion-toggle',stateKey:'reducedMotion',apply:applyReducedMotion,onMsg:'Animations reduced',offMsg:'Animations restored'},
+  {id:'focus-highlight-toggle',stateKey:'enhancedFocus',apply:applyEnhancedFocus,onMsg:'Enhanced focus on',offMsg:'Focus highlight default'},
+  {id:'reading-guide-toggle2',stateKey:'readingGuideEnabled',apply:v=>{AppState.readingGuideEnabled=v;const g=document.getElementById('reading-guide');if(g)g.classList.toggle('active',v);const tb=document.getElementById('btn-reading-guide');if(tb)tb.setAttribute('aria-pressed',String(v))},onMsg:'Reading guide on',offMsg:'Reading guide off'},
+  {id:'cursor-toggle',stateKey:'largeCursor',apply:applyLargeCursor,onMsg:'Large cursor on',offMsg:'Cursor restored'},
+];
+
+function initToggleSwitches(){
+  TOGGLE_MAP.forEach(({id,stateKey,apply,onMsg,offMsg})=>{
+    const b=document.getElementById(id);if(!b)return;
+    b.addEventListener('click',()=>{const next=b.getAttribute('aria-checked')!=='true';b.setAttribute('aria-checked',String(next));AppState[stateKey]=next;apply(next);saveSettings();announceToScreenReader(next?onMsg:offMsg)});
+  });
+}
+
+function initResetButton(){
+  const rb=document.getElementById('btn-reset-settings');if(!rb)return;
+  rb.addEventListener('click',()=>{
+    if(!confirm('Reset all accessibility settings to default?'))return;
+    try{localStorage.removeItem('accessbridge-settings')}catch(e){}
+    Object.assign(AppState,{captionsEnabled:false,readingGuideEnabled:false,currentTheme:'default',fontSize:16,dyslexiaMode:false,reducedMotion:false,enhancedFocus:false,largeCursor:false,lineSpacing:false,letterSpacing:false,bannerAlertsEnabled:true,screenFlashEnabled:true});
+    applyAllSettings();syncSettingsUI();
+    document.getElementById('caption-bar')?.setAttribute('hidden','');
+    document.getElementById('reading-guide')?.classList.remove('active');
+    const c=document.getElementById('reset-confirm');if(c){c.textContent='✅ Settings reset';setTimeout(()=>{c.textContent=''},3000)}
+    announceToScreenReader('All settings reset to default');
+  });
+}
+
+function syncSettingsUI(){
+  document.querySelectorAll('.theme-btn').forEach(b=>{const a=b.dataset.theme===AppState.currentTheme;b.setAttribute('aria-pressed',String(a));b.classList.toggle('active',a)});
+  const fd=document.getElementById('font-size-display');if(fd)fd.textContent=`${AppState.fontSize}px`;
+  highlightActiveFontBtn();
+  TOGGLE_MAP.forEach(({id,stateKey})=>{const b=document.getElementById(id);if(b)b.setAttribute('aria-checked',String(AppState[stateKey]))});
+  const bt=document.getElementById('banner-toggle');if(bt)bt.setAttribute('aria-checked',String(AppState.bannerAlertsEnabled!==false));
+  const ft=document.getElementById('screen-flash-toggle');if(ft)ft.setAttribute('aria-checked',String(AppState.screenFlashEnabled!==false));
+}
+</script>
+
+</body>
+</html>
