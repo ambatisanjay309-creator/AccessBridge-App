@@ -5,6 +5,5 @@
   "description": "Helping people with speech and hearing disabilities communicate.",
   "action": {
     "default_popup": "popup.html"
-  },
-  "permissions": []
+  }
 }
