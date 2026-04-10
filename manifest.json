@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "AccessBridge",
+  "version": "1.0",
+  "description": "Helping people with speech and hearing disabilities communicate.",
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "permissions": []
+}
